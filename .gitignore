@@ -1,0 +1,10 @@
+.DS_Store
+.wrangler/
+node_modules/
+.dev.vars
+.env
+# Working folders, not part of the deployable site
+astro-site/
+astro-site-backup/
+raw/
+wget_mirror/

@@ -1,0 +1,27 @@
+{
+  "url": "https://www.lawedgesolutions.com",
+  "host": "lawedgesolutions.com",
+  "capture": "ok",
+  "updated": "2026-09-11T10:54:00Z",
+  "status": "✅ STATIC SITE READY - LOCAL TESTING",
+  "phase": "TIER 1 - EXACT REPLICA - TESTING",
+  "dev_server": "http://localhost:4324",
+  "server_type": "Python HTTP Server (static HTML)",
+  "counts": {
+    "pages": 8,
+    "assets": 27,
+    "page_failures": 0,
+    "asset_failures": 3,
+    "total_size_mb": 1.5
+  },
+  "pages": [
+    { "name": "index", "route": "/", "size_kb": 43 },
+    { "name": "about", "route": "/about", "size_kb": 24 },
+    { "name": "services", "route": "/services", "size_kb": 33 },
+    { "name": "pricing", "route": "/pricing", "size_kb": 43 },
+    { "name": "contact", "route": "/contact", "size_kb": 26 },
+    { "name": "blog", "route": "/blog", "size_kb": 33 },
+    { "name": "privacy", "route": "/privacy", "size_kb": 106 },
+    { "name": "terms", "route": "/terms", "size_kb": 106 }
+  ]
+}

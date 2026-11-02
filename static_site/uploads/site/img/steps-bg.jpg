@@ -1,0 +1,4347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="turbo-visit-control" content="reload">
+  <title>Action Controller: Exception caught</title>
+  <style>
+    body {
+      background-color: #FAFAFA;
+      color: #333;
+      color-scheme: light dark;
+      supported-color-schemes: light dark;
+      margin: 0px;
+    }
+
+    body, p, ol, ul, td {
+      font-family: helvetica, verdana, arial, sans-serif;
+      font-size:   13px;
+      line-height: 18px;
+    }
+
+    pre {
+      font-size: 11px;
+      white-space: pre-wrap;
+    }
+
+    pre.box {
+      border: 1px solid #EEE;
+      padding: 10px;
+      margin: 0px;
+      width: 958px;
+    }
+
+    header {
+      color: #F0F0F0;
+      background: #C00;
+      padding: 0.5em 1.5em;
+    }
+
+    h1 {
+      overflow-wrap: break-word;
+      margin: 0.2em 0;
+      line-height: 1.1em;
+      font-size: 2em;
+    }
+
+    h2 {
+      color: #C00;
+      line-height: 25px;
+    }
+
+    code.traces {
+      font-size: 11px;
+    }
+
+    .response-heading, .request-heading {
+      margin-top: 30px;
+    }
+
+    .exception-message {
+      padding: 8px 0;
+    }
+
+    .exception-message .message {
+      margin-bottom: 8px;
+      line-height: 25px;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #C00;
+    }
+
+    .details {
+      border: 1px solid #D0D0D0;
+      border-radius: 4px;
+      margin: 1em 0px;
+      display: block;
+      max-width: 978px;
+    }
+
+    .summary {
+      padding: 8px 15px;
+      border-bottom: 1px solid #D0D0D0;
+      display: block;
+    }
+
+    a.summary {
+      color: #F0F0F0;
+      text-decoration: none;
+      background: #C52F24;
+      border-bottom: none;
+    }
+
+    .details pre {
+      margin: 5px;
+      border: none;
+    }
+
+    #container {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 1.5em;
+    }
+
+    .source * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .source {
+      border: 1px solid #D9D9D9;
+      background: #ECECEC;
+      max-width: 978px;
+    }
+
+    .source pre {
+      padding: 10px 0px;
+      border: none;
+    }
+
+    .source .data {
+      font-size: 80%;
+      overflow: auto;
+      background-color: #FFF;
+    }
+
+    .info {
+      padding: 0.5em;
+    }
+
+    .source .data .line_numbers {
+      background-color: #ECECEC;
+      color: #555;
+      padding: 1em .5em;
+      border-right: 1px solid #DDD;
+      text-align: right;
+    }
+
+    .line {
+      padding-left: 10px;
+      white-space: pre;
+    }
+
+    .line:hover {
+      background-color: #F6F6F6;
+    }
+
+    .line.active {
+      background-color: #FCC;
+    }
+
+    .error_highlight {
+      display: inline-block;
+      background-color: #FF9;
+      text-decoration: #F00 wavy underline;
+    }
+
+    .error_highlight_tip {
+      color: #666;
+      padding: 2px 2px;
+      font-size: 10px;
+    }
+
+    .button_to {
+      display: inline-block;
+      margin-top: 0.75em;
+      margin-bottom: 0.75em;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .correction {
+      list-style-type: none;
+    }
+
+    input[type="submit"] {
+      color: white;
+      background-color: #C00;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 3px #F99;
+      font-size: 13px;
+      font-weight: bold;
+      margin: 0;
+      padding: 10px 18px;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+    input[type="submit"]:focus,
+    input[type="submit"]:hover {
+      opacity: 0.8;
+    }
+    input[type="submit"]:active {
+      box-shadow: 0 2px #F99;
+      transform: translateY(1px)
+    }
+
+    a { color: #980905; }
+    a:visited { color: #666; }
+    a.trace-frames {
+      color: #666;
+      overflow-wrap: break-word;
+    }
+    a:hover, a.trace-frames.selected { color: #C00; }
+    a.summary:hover { color: #FFF; }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #222;
+        color: #ECECEC;
+      }
+
+      .details, .summary {
+        border-color: #666;
+      }
+
+      .source {
+        border-color: #555;
+        background-color: #333;
+      }
+
+      .source .data {
+        background: #444;
+      }
+
+      .source .data .line_numbers {
+        background: #333;
+        border-color: #222;
+      }
+
+      .line:hover {
+        background: #666;
+      }
+
+      .line.active {
+        background-color: #900;
+      }
+
+      .error_highlight {
+        color: #333;
+      }
+
+      input[type="submit"] {
+        box-shadow: 0 3px #800;
+      }
+      input[type="submit"]:active {
+        box-shadow: 0 2px #800;
+      }
+
+      a { color: #C00; }
+      a.trace-frames { color: #999; }
+      a:hover, a.trace-frames.selected { color: #E9382B; }
+    }
+
+      h2, p {
+    padding-left: 30px;
+  }
+
+  #route_table {
+    margin: 0;
+    border-collapse: collapse;
+    word-wrap:break-word;
+    table-layout: fixed;
+    width:100%;
+  }
+
+  #route_table thead tr {
+    border-bottom: 2px solid #ddd;
+  }
+
+  #route_table th {
+    padding-left: 30px;
+    text-align: left;
+  }
+
+  #route_table thead tr.bottom {
+    border-bottom: none;
+  }
+
+  #route_table thead tr.bottom th {
+    padding: 10px 30px;
+    line-height: 15px;
+  }
+
+  #route_table #search_container {
+    padding: 7px 30px;
+  }
+
+  #route_table thead tr th input#search {
+    -webkit-appearance: textfield;
+    width:100%;
+  }
+
+  #route_table thead th.http-verb {
+    width: 10%;
+  }
+
+  #route_table tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
+
+  #route_table tbody tr:nth-child(odd) {
+    background: #f2f2f2;
+  }
+
+  #route_table tbody.exact_matches,
+  #route_table tbody.fuzzy_matches {
+    background-color: LightGoldenRodYellow;
+    border-bottom: solid 2px SlateGrey;
+  }
+
+  #route_table tbody.exact_matches tr,
+  #route_table tbody.fuzzy_matches tr {
+    background: none;
+    border-bottom: none;
+  }
+
+  #route_table td {
+    padding: 4px 30px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #route_table tbody tr:nth-child(odd) {
+      background: #282828;
+    }
+
+    #route_table tbody.exact_matches tr,
+    #route_table tbody.fuzzy_matches tr {
+      background: DarkSlateGrey;
+    }
+  }
+
+  </style>
+
+  <script>
+    var toggle = function(id) {
+      document.getElementById(id).classList.toggle('hidden');
+      return false;
+    }
+    var show = function(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+    var hide = function(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    var toggleSessionDump = function() {
+      return toggle('session_dump');
+    }
+    var toggleEnvDump = function() {
+      return toggle('env_dump');
+    }
+  </script>
+</head>
+<body>
+
+  <header role="banner">
+  <h1>Routing Error</h1>
+</header>
+<main role="main" id="container">
+  <h2>No route matches [GET] &quot;/uploads/site/img/steps-bg.jpg&quot;</h2>
+
+  
+<p><code>Rails.root: /rails</code></p>
+
+<div id="traces-0">
+    <a href="#" onclick="hide(&#39;Framework-Trace-0&#39;);hide(&#39;Full-Trace-0&#39;);show(&#39;Application-Trace-0&#39;);; return false;">Application Trace</a> |
+    <a href="#" onclick="hide(&#39;Application-Trace-0&#39;);hide(&#39;Full-Trace-0&#39;);show(&#39;Framework-Trace-0&#39;);; return false;">Framework Trace</a> |
+    <a href="#" onclick="hide(&#39;Application-Trace-0&#39;);hide(&#39;Framework-Trace-0&#39;);show(&#39;Full-Trace-0&#39;);; return false;">Full Trace</a> 
+
+    <div id="Application-Trace-0" style="display: block;">
+      <code class="traces">
+      </code>
+    </div>
+    <div id="Framework-Trace-0" style="display: none;">
+      <code class="traces">
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="0" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/debug_exceptions.rb:35:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="1" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:132:in `call_app&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="2" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:19:in `block in call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="3" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:17:in `catch&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="4" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:17:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="5" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="6" href="#">
+            railties (7.2.3) lib/rails/rack/logger.rb:41:in `call_app&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="7" href="#">
+            railties (7.2.3) lib/rails/rack/logger.rb:29:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="8" href="#">
+            sprockets-rails (3.5.2) lib/sprockets/rails/quiet_assets.rb:17:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="9" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/remote_ip.rb:96:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="10" href="#">
+            request_store (1.7.0) lib/request_store/middleware.rb:19:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="11" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/request_id.rb:33:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="12" href="#">
+            rack (3.2.4) lib/rack/method_override.rb:28:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="13" href="#">
+            rack (3.2.4) lib/rack/runtime.rb:24:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="14" href="#">
+            activesupport (7.2.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="15" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:61:in `block in call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="16" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:26:in `collect_events&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="17" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:60:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="18" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/executor.rb:16:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="19" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/static.rb:27:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="20" href="#">
+            rack (3.2.4) lib/rack/sendfile.rb:131:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="21" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/assume_ssl.rb:24:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="22" href="#">
+            railties (7.2.3) lib/rails/engine.rb:535:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="23" href="#">
+            puma (6.6.1) lib/puma/configuration.rb:279:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="24" href="#">
+            puma (6.6.1) lib/puma/request.rb:99:in `block in handle_request&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="25" href="#">
+            puma (6.6.1) lib/puma/thread_pool.rb:390:in `with_force_shutdown&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="26" href="#">
+            puma (6.6.1) lib/puma/request.rb:98:in `handle_request&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="27" href="#">
+            puma (6.6.1) lib/puma/server.rb:472:in `process_client&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="28" href="#">
+            puma (6.6.1) lib/puma/server.rb:254:in `block in run&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="29" href="#">
+            puma (6.6.1) lib/puma/thread_pool.rb:167:in `block in spawn_thread&#39;
+          </a>
+          <br>
+      </code>
+    </div>
+    <div id="Full-Trace-0" style="display: none;">
+      <code class="traces">
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="0" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/debug_exceptions.rb:35:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="1" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:132:in `call_app&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="2" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:19:in `block in call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="3" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:17:in `catch&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="4" href="#">
+            web-console (4.2.1) lib/web_console/middleware.rb:17:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="5" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="6" href="#">
+            railties (7.2.3) lib/rails/rack/logger.rb:41:in `call_app&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="7" href="#">
+            railties (7.2.3) lib/rails/rack/logger.rb:29:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="8" href="#">
+            sprockets-rails (3.5.2) lib/sprockets/rails/quiet_assets.rb:17:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="9" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/remote_ip.rb:96:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="10" href="#">
+            request_store (1.7.0) lib/request_store/middleware.rb:19:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="11" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/request_id.rb:33:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="12" href="#">
+            rack (3.2.4) lib/rack/method_override.rb:28:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="13" href="#">
+            rack (3.2.4) lib/rack/runtime.rb:24:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="14" href="#">
+            activesupport (7.2.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="15" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:61:in `block in call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="16" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:26:in `collect_events&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="17" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/server_timing.rb:60:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="18" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/executor.rb:16:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="19" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/static.rb:27:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="20" href="#">
+            rack (3.2.4) lib/rack/sendfile.rb:131:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="21" href="#">
+            actionpack (7.2.3) lib/action_dispatch/middleware/assume_ssl.rb:24:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="22" href="#">
+            railties (7.2.3) lib/rails/engine.rb:535:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="23" href="#">
+            puma (6.6.1) lib/puma/configuration.rb:279:in `call&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="24" href="#">
+            puma (6.6.1) lib/puma/request.rb:99:in `block in handle_request&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="25" href="#">
+            puma (6.6.1) lib/puma/thread_pool.rb:390:in `with_force_shutdown&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="26" href="#">
+            puma (6.6.1) lib/puma/request.rb:98:in `handle_request&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="27" href="#">
+            puma (6.6.1) lib/puma/server.rb:472:in `process_client&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="28" href="#">
+            puma (6.6.1) lib/puma/server.rb:254:in `block in run&#39;
+          </a>
+          <br>
+          <a class="trace-frames trace-frames-0" data-exception-object-id="3985540" data-frame-id="29" href="#">
+            puma (6.6.1) lib/puma/thread_pool.rb:167:in `block in spawn_thread&#39;
+          </a>
+          <br>
+      </code>
+    </div>
+
+  <script>
+    (function() {
+      var traceFrames = document.getElementsByClassName('trace-frames-0');
+      var selectedFrame, currentSource = document.getElementById('frame-source-0-0');
+
+      // Add click listeners for all stack frames
+      for (var i = 0; i < traceFrames.length; i++) {
+        traceFrames[i].addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = e.target;
+          var frame_id = target.dataset.frameId;
+
+          if (selectedFrame) {
+            selectedFrame.className = selectedFrame.className.replace("selected", "");
+          }
+
+          target.className += " selected";
+          selectedFrame = target;
+
+          // Change the extracted source code
+          changeSourceExtract(frame_id);
+        });
+
+        function changeSourceExtract(frame_id) {
+          var el = document.getElementById('frame-source-0-' + frame_id);
+          if (currentSource && el) {
+            currentSource.className += " hidden";
+            el.className = el.className.replace(" hidden", "");
+            currentSource = el;
+          }
+        }
+      }
+    })();
+  </script>
+</div>
+
+
+    <h2>
+      Routes
+    </h2>
+
+    <p>
+      Routes match in priority from top to bottom
+    </p>
+
+    
+<table id='route_table'>
+  <thead>
+    <tr>
+      <th>Helper
+        (<a data-route-helper="_path" title="Returns a relative path (without the http or domain)" href="#">Path</a> /
+        <a data-route-helper="_url" title="Returns an absolute URL (with the http and domain)" href="#">Url</a>)
+      </th>
+      <th class="http-verb">HTTP Verb</th>
+      <th>Path</th>
+      <th>Controller#Action</th>
+      <th>Source Location</th>
+    </tr>
+    <tr>
+      <th colspan="5" id="search_container"><input id="search" placeholder="Search" type="search" name="query[]" /></th>
+    </tr>
+  </thead>
+  <tbody class='exact_matches' id='exact_matches'>
+  </tbody>
+  <tbody class='fuzzy_matches' id='fuzzy_matches'>
+  </tbody>
+  <tbody>
+    <tr class='route_row' data-helper='path'>
+  <td data-route-name='llamapress_auth_consume'>
+      llamapress_auth_consume<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/llamapress_auth/consume(.:format)'>
+    /llamapress_auth/consume(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/unified_login#consume</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/lib/llama_bot_rails/engine.rb:276</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user_session'>
+      new_user_session<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/sign_in(.:format)'>
+    /users/sign_in(.:format)
+  </td>
+  <td>
+    <p>devise/sessions#new</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:379</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_session'>
+      user_session<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users/sign_in(.:format)'>
+    /users/sign_in(.:format)
+  </td>
+  <td>
+    <p>devise/sessions#create</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:380</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='destroy_user_session'>
+      destroy_user_session<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/users/sign_out(.:format)'>
+    /users/sign_out(.:format)
+  </td>
+  <td>
+    <p>devise/sessions#destroy</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:381</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user_password'>
+      new_user_password<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/password/new(.:format)'>
+    /users/password/new(.:format)
+  </td>
+  <td>
+    <p>devise/passwords#new</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:386</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_user_password'>
+      edit_user_password<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/password/edit(.:format)'>
+    /users/password/edit(.:format)
+  </td>
+  <td>
+    <p>devise/passwords#edit</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:386</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_password'>
+      user_password<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/users/password(.:format)'>
+    /users/password(.:format)
+  </td>
+  <td>
+    <p>devise/passwords#update</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:386</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/users/password(.:format)'>
+    /users/password(.:format)
+  </td>
+  <td>
+    <p>devise/passwords#update</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:386</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users/password(.:format)'>
+    /users/password(.:format)
+  </td>
+  <td>
+    <p>devise/passwords#create</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:386</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='cancel_user_registration'>
+      cancel_user_registration<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/cancel(.:format)'>
+    /users/cancel(.:format)
+  </td>
+  <td>
+    <p>users/registrations#cancel</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:417</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user_registration'>
+      new_user_registration<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/sign_up(.:format)'>
+    /users/sign_up(.:format)
+  </td>
+  <td>
+    <p>users/registrations#new</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_user_registration'>
+      edit_user_registration<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/edit(.:format)'>
+    /users/edit(.:format)
+  </td>
+  <td>
+    <p>users/registrations#edit</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_registration'>
+      user_registration<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users/registrations#update</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users/registrations#update</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users/registrations#destroy</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users/registrations#create</p>
+  </td>
+  <td>
+    <p>devise (4.9.4) lib/devise/rails/routes.rb:416</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='generate_profile_pic_user'>
+      generate_profile_pic_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/:id/generate_profile_pic(.:format)'>
+    /users/:id/generate_profile_pic(.:format)
+  </td>
+  <td>
+    <p>users#generate_profile_pic_form</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:5</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users/:id/generate_profile_pic(.:format)'>
+    /users/:id/generate_profile_pic(.:format)
+  </td>
+  <td>
+    <p>users#generate_profile_pic</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:6</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='generate_bio_audio_user'>
+      generate_bio_audio_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/:id/generate_bio_audio(.:format)'>
+    /users/:id/generate_bio_audio(.:format)
+  </td>
+  <td>
+    <p>users#generate_bio_audio_form</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:7</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users/:id/generate_bio_audio(.:format)'>
+    /users/:id/generate_bio_audio(.:format)
+  </td>
+  <td>
+    <p>users#generate_bio_audio</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:8</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='users'>
+      users<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/users(.:format)'>
+    /users(.:format)
+  </td>
+  <td>
+    <p>users#create</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user'>
+      new_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/new(.:format)'>
+    /users/new(.:format)
+  </td>
+  <td>
+    <p>users#new</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_user'>
+      edit_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/:id/edit(.:format)'>
+    /users/:id/edit(.:format)
+  </td>
+  <td>
+    <p>users#edit</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user'>
+      user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/:id(.:format)'>
+    /users/:id(.:format)
+  </td>
+  <td>
+    <p>users#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/users/:id(.:format)'>
+    /users/:id(.:format)
+  </td>
+  <td>
+    <p>users#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/users/:id(.:format)'>
+    /users/:id(.:format)
+  </td>
+  <td>
+    <p>users#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/users/:id(.:format)'>
+    /users/:id(.:format)
+  </td>
+  <td>
+    <p>users#destroy</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='api_users'>
+      api_users<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/api/users(.:format)'>
+    /api/users(.:format)
+  </td>
+  <td>
+    <p>api/users#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:18</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/api/users(.:format)'>
+    /api/users(.:format)
+  </td>
+  <td>
+    <p>api/users#create</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:18</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='api_user'>
+      api_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/api/users/:id(.:format)'>
+    /api/users/:id(.:format)
+  </td>
+  <td>
+    <p>api/users#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:18</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='llama_bot_rails'>
+      llama_bot_rails<span class='helper'>_path</span>
+  </td>
+  <td>
+    
+  </td>
+  <td data-route-path='/llama_bot'>
+    /llama_bot
+  </td>
+  <td>
+    <p>LlamaBotRails::Engine</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:21</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_health_check'>
+      rails_health_check<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/up(.:format)'>
+    /up(.:format)
+  </td>
+  <td>
+    <p>rails/health#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:26</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='pwa_service_worker'>
+      pwa_service_worker<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/service-worker(.:format)'>
+    /service-worker(.:format)
+  </td>
+  <td>
+    <p>rails/pwa#service_worker</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:29</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='pwa_manifest'>
+      pwa_manifest<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/manifest(.:format)'>
+    /manifest(.:format)
+  </td>
+  <td>
+    <p>rails/pwa#manifest</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:30</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='home'>
+      home<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/home(.:format)'>
+    /home(.:format)
+  </td>
+  <td>
+    <p>public#home</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:32</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='chat'>
+      chat<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/chat(.:format)'>
+    /chat(.:format)
+  </td>
+  <td>
+    <p>public#chat</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:33</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='install'>
+      install<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/install(.:format)'>
+    /install(.:format)
+  </td>
+  <td>
+    <p>public#install</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:34</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='brand'>
+      brand<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/brand(.:format)'>
+    /brand(.:format)
+  </td>
+  <td>
+    <p>public#brand</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:35</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_root'>
+      admin_root<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin(.:format)'>
+    /admin(.:format)
+  </td>
+  <td>
+    <p>admin/dashboard#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:38</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='impersonate_admin_user'>
+      impersonate_admin_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/admin/users/:id/impersonate(.:format)'>
+    /admin/users/:id/impersonate(.:format)
+  </td>
+  <td>
+    <p>admin/users#impersonate</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:42</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_users'>
+      admin_users<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/users(.:format)'>
+    /admin/users(.:format)
+  </td>
+  <td>
+    <p>admin/users#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/admin/users(.:format)'>
+    /admin/users(.:format)
+  </td>
+  <td>
+    <p>admin/users#create</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_admin_user'>
+      new_admin_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/users/new(.:format)'>
+    /admin/users/new(.:format)
+  </td>
+  <td>
+    <p>admin/users#new</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_admin_user'>
+      edit_admin_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/users/:id/edit(.:format)'>
+    /admin/users/:id/edit(.:format)
+  </td>
+  <td>
+    <p>admin/users#edit</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_user'>
+      admin_user<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/users/:id(.:format)'>
+    /admin/users/:id(.:format)
+  </td>
+  <td>
+    <p>admin/users#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/admin/users/:id(.:format)'>
+    /admin/users/:id(.:format)
+  </td>
+  <td>
+    <p>admin/users#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/admin/users/:id(.:format)'>
+    /admin/users/:id(.:format)
+  </td>
+  <td>
+    <p>admin/users#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/admin/users/:id(.:format)'>
+    /admin/users/:id(.:format)
+  </td>
+  <td>
+    <p>admin/users#destroy</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='stop_impersonating'>
+      stop_impersonating<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/stop_impersonating(.:format)'>
+    /stop_impersonating(.:format)
+  </td>
+  <td>
+    <p>application#stop_impersonating</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:47</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='webhooks_recall'>
+      webhooks_recall<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/webhooks/recall(.:format)'>
+    /webhooks/recall(.:format)
+  </td>
+  <td>
+    <p>webhooks#recall</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:50</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/prototypes/*page(.:format)'>
+    /prototypes/*page(.:format)
+  </td>
+  <td>
+    <p>prototypes#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:52</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='root'>
+      root<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/'>
+    /
+  </td>
+  <td>
+    <p>site#show {:slug=&gt;"home"}</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:55</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='blog'>
+      blog<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/blog(.:format)'>
+    /blog(.:format)
+  </td>
+  <td>
+    <p>site#blog</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:57</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='contact'>
+      contact<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/contact(.:format)'>
+    /contact(.:format)
+  </td>
+  <td>
+    <p>site#contact</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='contact_submit'>
+      contact_submit<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/api/contact(.:format)'>
+    /api/contact(.:format)
+  </td>
+  <td>
+    <p>leads#create</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:60</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='post'>
+      post<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/law-press/:slug(.:format)'>
+    /law-press/:slug(.:format)
+  </td>
+  <td>
+    <p>posts#show {:slug=&gt;/[a-z0-9\-]+/}</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:61</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_pages'>
+      admin_pages<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/pages(.:format)'>
+    /admin/pages(.:format)
+  </td>
+  <td>
+    <p>admin/pages#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:65</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_admin_page'>
+      edit_admin_page<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/pages/:id/edit(.:format)'>
+    /admin/pages/:id/edit(.:format)
+  </td>
+  <td>
+    <p>admin/pages#edit</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:65</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_page'>
+      admin_page<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/admin/pages/:id(.:format)'>
+    /admin/pages/:id(.:format)
+  </td>
+  <td>
+    <p>admin/pages#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:65</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/admin/pages/:id(.:format)'>
+    /admin/pages/:id(.:format)
+  </td>
+  <td>
+    <p>admin/pages#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:65</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_posts'>
+      admin_posts<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/posts(.:format)'>
+    /admin/posts(.:format)
+  </td>
+  <td>
+    <p>admin/posts#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/admin/posts(.:format)'>
+    /admin/posts(.:format)
+  </td>
+  <td>
+    <p>admin/posts#create</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_admin_post'>
+      new_admin_post<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/posts/new(.:format)'>
+    /admin/posts/new(.:format)
+  </td>
+  <td>
+    <p>admin/posts#new</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_admin_post'>
+      edit_admin_post<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/posts/:id/edit(.:format)'>
+    /admin/posts/:id/edit(.:format)
+  </td>
+  <td>
+    <p>admin/posts#edit</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_post'>
+      admin_post<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/posts/:id(.:format)'>
+    /admin/posts/:id(.:format)
+  </td>
+  <td>
+    <p>admin/posts#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/admin/posts/:id(.:format)'>
+    /admin/posts/:id(.:format)
+  </td>
+  <td>
+    <p>admin/posts#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/admin/posts/:id(.:format)'>
+    /admin/posts/:id(.:format)
+  </td>
+  <td>
+    <p>admin/posts#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/admin/posts/:id(.:format)'>
+    /admin/posts/:id(.:format)
+  </td>
+  <td>
+    <p>admin/posts#destroy</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_leads'>
+      admin_leads<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/leads(.:format)'>
+    /admin/leads(.:format)
+  </td>
+  <td>
+    <p>admin/leads#index</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:67</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_lead'>
+      admin_lead<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/leads/:id(.:format)'>
+    /admin/leads/:id(.:format)
+  </td>
+  <td>
+    <p>admin/leads#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:67</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/admin/leads/:id(.:format)'>
+    /admin/leads/:id(.:format)
+  </td>
+  <td>
+    <p>admin/leads#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:67</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/admin/leads/:id(.:format)'>
+    /admin/leads/:id(.:format)
+  </td>
+  <td>
+    <p>admin/leads#update</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:67</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='admin_deploy_download'>
+      admin_deploy_download<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/admin/deploy/download(.:format)'>
+    /admin/deploy/download(.:format)
+  </td>
+  <td>
+    <p>admin/deploys#download</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:68</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='download_changelog'>
+      download_changelog<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/download/changelog(.:format)'>
+    /download/changelog(.:format)
+  </td>
+  <td>
+    <p>site#download_changelog</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:71</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='download_deploy'>
+      download_deploy<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/download/deploy(.:format)'>
+    /download/deploy(.:format)
+  </td>
+  <td>
+    <p>site#download_deploy</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:72</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/wp-content/*path(.:format)'>
+    /wp-content/*path(.:format)
+  </td>
+  <td>
+    <p>redirect(301, /uploads/site/wp-content/%{path})</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:75</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/wp-includes/*path(.:format)'>
+    /wp-includes/*path(.:format)
+  </td>
+  <td>
+    <p>redirect(301, /uploads/site/wp-includes/%{path})</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:76</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='page'>
+      page<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/:slug(.:format)'>
+    /:slug(.:format)
+  </td>
+  <td>
+    <p>site#show</p>
+  </td>
+  <td>
+    <p>/rails/config/routes.rb:81</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='turbo_recede_historical_location'>
+      turbo_recede_historical_location<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/recede_historical_location(.:format)'>
+    /recede_historical_location(.:format)
+  </td>
+  <td>
+    <p>turbo/native/navigation#recede</p>
+  </td>
+  <td>
+    <p>turbo-rails (2.0.16) config/routes.rb:2</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='turbo_resume_historical_location'>
+      turbo_resume_historical_location<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/resume_historical_location(.:format)'>
+    /resume_historical_location(.:format)
+  </td>
+  <td>
+    <p>turbo/native/navigation#resume</p>
+  </td>
+  <td>
+    <p>turbo-rails (2.0.16) config/routes.rb:3</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='turbo_refresh_historical_location'>
+      turbo_refresh_historical_location<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/refresh_historical_location(.:format)'>
+    /refresh_historical_location(.:format)
+  </td>
+  <td>
+    <p>turbo/native/navigation#refresh</p>
+  </td>
+  <td>
+    <p>turbo-rails (2.0.16) config/routes.rb:4</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_postmark_inbound_emails'>
+      rails_postmark_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/action_mailbox/postmark/inbound_emails(.:format)'>
+    /rails/action_mailbox/postmark/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/postmark/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:5</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_relay_inbound_emails'>
+      rails_relay_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/action_mailbox/relay/inbound_emails(.:format)'>
+    /rails/action_mailbox/relay/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/relay/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:6</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_sendgrid_inbound_emails'>
+      rails_sendgrid_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/action_mailbox/sendgrid/inbound_emails(.:format)'>
+    /rails/action_mailbox/sendgrid/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/sendgrid/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:7</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_mandrill_inbound_health_check'>
+      rails_mandrill_inbound_health_check<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/action_mailbox/mandrill/inbound_emails(.:format)'>
+    /rails/action_mailbox/mandrill/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/mandrill/inbound_emails#health_check</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:10</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_mandrill_inbound_emails'>
+      rails_mandrill_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/action_mailbox/mandrill/inbound_emails(.:format)'>
+    /rails/action_mailbox/mandrill/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/mandrill/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:11</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_mailgun_inbound_emails'>
+      rails_mailgun_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/action_mailbox/mailgun/inbound_emails/mime(.:format)'>
+    /rails/action_mailbox/mailgun/inbound_emails/mime(.:format)
+  </td>
+  <td>
+    <p>action_mailbox/ingresses/mailgun/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:14</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_conductor_inbound_emails'>
+      rails_conductor_inbound_emails<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails#index</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:19</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:19</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_rails_conductor_inbound_email'>
+      new_rails_conductor_inbound_email<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails/new(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails/new(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails#new</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:19</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_conductor_inbound_email'>
+      rails_conductor_inbound_email<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails/:id(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails/:id(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails#show</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:19</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_rails_conductor_inbound_email_source'>
+      new_rails_conductor_inbound_email_source<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails/sources/new(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails/sources/new(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails/sources#new</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:20</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_conductor_inbound_email_sources'>
+      rails_conductor_inbound_email_sources<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/inbound_emails/sources(.:format)'>
+    /rails/conductor/action_mailbox/inbound_emails/sources(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/inbound_emails/sources#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:21</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_conductor_inbound_email_reroute'>
+      rails_conductor_inbound_email_reroute<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/:inbound_email_id/reroute(.:format)'>
+    /rails/conductor/action_mailbox/:inbound_email_id/reroute(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/reroutes#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:23</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_conductor_inbound_email_incinerate'>
+      rails_conductor_inbound_email_incinerate<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/conductor/action_mailbox/:inbound_email_id/incinerate(.:format)'>
+    /rails/conductor/action_mailbox/:inbound_email_id/incinerate(.:format)
+  </td>
+  <td>
+    <p>rails/conductor/action_mailbox/incinerates#create</p>
+  </td>
+  <td>
+    <p>actionmailbox (7.2.3) config/routes.rb:24</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_service_blob'>
+      rails_service_blob<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/blobs/redirect/:signed_id/*filename(.:format)'>
+    /rails/active_storage/blobs/redirect/:signed_id/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/blobs/redirect#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:5</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_service_blob_proxy'>
+      rails_service_blob_proxy<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/blobs/proxy/:signed_id/*filename(.:format)'>
+    /rails/active_storage/blobs/proxy/:signed_id/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/blobs/proxy#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:6</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/blobs/:signed_id/*filename(.:format)'>
+    /rails/active_storage/blobs/:signed_id/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/blobs/redirect#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:7</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_blob_representation'>
+      rails_blob_representation<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format)'>
+    /rails/active_storage/representations/redirect/:signed_blob_id/:variation_key/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/representations/redirect#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:9</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_blob_representation_proxy'>
+      rails_blob_representation_proxy<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format)'>
+    /rails/active_storage/representations/proxy/:signed_blob_id/:variation_key/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/representations/proxy#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:10</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format)'>
+    /rails/active_storage/representations/:signed_blob_id/:variation_key/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/representations/redirect#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:11</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_disk_service'>
+      rails_disk_service<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/rails/active_storage/disk/:encoded_key/*filename(.:format)'>
+    /rails/active_storage/disk/:encoded_key/*filename(.:format)
+  </td>
+  <td>
+    <p>active_storage/disk#show</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:13</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='update_rails_disk_service'>
+      update_rails_disk_service<span class='helper'>_path</span>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/rails/active_storage/disk/:encoded_token(.:format)'>
+    /rails/active_storage/disk/:encoded_token(.:format)
+  </td>
+  <td>
+    <p>active_storage/disk#update</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:14</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='rails_direct_uploads'>
+      rails_direct_uploads<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/rails/active_storage/direct_uploads(.:format)'>
+    /rails/active_storage/direct_uploads(.:format)
+  </td>
+  <td>
+    <p>active_storage/direct_uploads#create</p>
+  </td>
+  <td>
+    <p>activestorage (7.2.3) config/routes.rb:15</p>
+  </td>
+</tr>
+
+<tr><th colspan="5">Routes for LlamaBotRails::Engine</th></tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='unauthorized'>
+      unauthorized<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/unauthorized(.:format)'>
+    /unauthorized(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/application#unauthorized</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:2</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='inbox'>
+      inbox<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/inbox(.:format)'>
+    /inbox(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/inbox#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:8</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='sign_in'>
+      sign_in<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/sign_in(.:format)'>
+    /sign_in(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/sessions#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:14</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/sign_in(.:format)'>
+    /sign_in(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/sessions#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:15</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='download_shared_link'>
+      download_shared_link<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/shared/:token/download(.:format)'>
+    /shared/:token/download(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/shared_links#download</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:20</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='stream_shared_link'>
+      stream_shared_link<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/shared/:token/stream(.:format)'>
+    /shared/:token/stream(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/shared_links#stream</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:21</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='shared_link'>
+      shared_link<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/shared/:token(.:format)'>
+    /shared/:token(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/shared_links#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:18</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='agent_token'>
+      agent_token<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/agent/token(.:format)'>
+    /agent/token(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/agent_token#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:31</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    OPTIONS
+  </td>
+  <td data-route-path='/agent/token(.:format)'>
+    /agent/token(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/agent_token#options</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:32</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='errors'>
+      errors<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/errors(.:format)'>
+    /errors(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/errors#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:36</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='agent_threads'>
+      agent_threads<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/agent/threads(.:format)'>
+    /agent/threads(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/agent#threads</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:38</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/agent/chat-history/:thread_id(.:format)'>
+    /agent/chat-history/:thread_id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/agent#chat_history</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:39</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='agent_send_message'>
+      agent_send_message<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/agent/send_message(.:format)'>
+    /agent/send_message(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/agent#send_message</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:40</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='projects'>
+      projects<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/projects(.:format)'>
+    /projects(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/projects(.:format)'>
+    /projects(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_project'>
+      new_project<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/projects/new(.:format)'>
+    /projects/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_project'>
+      edit_project<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/projects/:id/edit(.:format)'>
+    /projects/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='project'>
+      project<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/projects/:id(.:format)'>
+    /projects/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/projects/:id(.:format)'>
+    /projects/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/projects/:id(.:format)'>
+    /projects/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/projects/:id(.:format)'>
+    /projects/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/projects#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:43</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='activity'>
+      activity<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/activity(.:format)'>
+    /activity(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/activity_events#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:48</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='activity_usage'>
+      activity_usage<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/activity/usage(.:format)'>
+    /activity/usage(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/activity_events#usage</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:49</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='activity_history'>
+      activity_history<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/activity/history/:subject_type/:subject_id(.:format)'>
+    /activity/history/:subject_type/:subject_id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/activity_events#history {:subject_type=&gt;/[A-Za-z0-9:]+/, :subject_id=&gt;/[^\/]+/}</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:50</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='activity_event'>
+      activity_event<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/activity/:id(.:format)'>
+    /activity/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/activity_events#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:54</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='notify_release'>
+      notify_release<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/releases/:id/notify(.:format)'>
+    /releases/:id/notify(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#notify</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:60</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='releases'>
+      releases<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/releases(.:format)'>
+    /releases(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/releases(.:format)'>
+    /releases(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_release'>
+      new_release<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/releases/new(.:format)'>
+    /releases/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_release'>
+      edit_release<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/releases/:id/edit(.:format)'>
+    /releases/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='release'>
+      release<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/releases/:id(.:format)'>
+    /releases/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/releases/:id(.:format)'>
+    /releases/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/releases/:id(.:format)'>
+    /releases/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/releases/:id(.:format)'>
+    /releases/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/releases#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:58</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='timeline_tickets'>
+      timeline_tickets<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tickets/timeline(.:format)'>
+    /tickets/timeline(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#timeline</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:66</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='move_ticket'>
+      move_ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/tickets/:id/move(.:format)'>
+    /tickets/:id/move(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#move</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:69</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_image_ticket'>
+      remove_image_ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/tickets/:id/remove_image(.:format)'>
+    /tickets/:id/remove_image(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#remove_image</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:70</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='share_attachment_ticket'>
+      share_attachment_ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/tickets/:id/share_attachment(.:format)'>
+    /tickets/:id/share_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#share_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:71</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='ticket_comments'>
+      ticket_comments<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/tickets/:ticket_id/comments(.:format)'>
+    /tickets/:ticket_id/comments(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/ticket_comments#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:73</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='ticket_comment'>
+      ticket_comment<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/tickets/:ticket_id/comments/:id(.:format)'>
+    /tickets/:ticket_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/ticket_comments#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:73</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='tickets'>
+      tickets<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tickets(.:format)'>
+    /tickets(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/tickets(.:format)'>
+    /tickets(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_ticket'>
+      new_ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tickets/new(.:format)'>
+    /tickets/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_ticket'>
+      edit_ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tickets/:id/edit(.:format)'>
+    /tickets/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='ticket'>
+      ticket<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tickets/:id(.:format)'>
+    /tickets/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/tickets/:id(.:format)'>
+    /tickets/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/tickets/:id(.:format)'>
+    /tickets/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/tickets/:id(.:format)'>
+    /tickets/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tickets#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:64</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='dashboard_user_feedbacks'>
+      dashboard_user_feedbacks<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback/dashboard(.:format)'>
+    /feedback/dashboard(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#dashboard</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:79</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='kanban_user_feedbacks'>
+      kanban_user_feedbacks<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback/kanban(.:format)'>
+    /feedback/kanban(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#kanban</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:80</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='add_tag_user_feedback'>
+      add_tag_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/feedback/:id/add_tag(.:format)'>
+    /feedback/:id/add_tag(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#add_tag</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:83</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_tag_user_feedback'>
+      remove_tag_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/feedback/:id/remove_tag(.:format)'>
+    /feedback/:id/remove_tag(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#remove_tag</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:84</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_attachment_user_feedback'>
+      remove_attachment_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/feedback/:id/remove_attachment(.:format)'>
+    /feedback/:id/remove_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#remove_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:85</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='share_attachment_user_feedback'>
+      share_attachment_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/feedback/:id/share_attachment(.:format)'>
+    /feedback/:id/share_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#share_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:86</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='move_user_feedback'>
+      move_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/feedback/:id/move(.:format)'>
+    /feedback/:id/move(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#move</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:87</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_attachment_user_feedback_comment'>
+      remove_attachment_user_feedback_comment<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/feedback/:user_feedback_id/comments/:id/remove_attachment(.:format)'>
+    /feedback/:user_feedback_id/comments/:id/remove_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#remove_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:91</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_feedback_comments'>
+      user_feedback_comments<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/feedback/:user_feedback_id/comments(.:format)'>
+    /feedback/:user_feedback_id/comments(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:89</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_feedback_comment'>
+      user_feedback_comment<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/feedback/:user_feedback_id/comments/:id(.:format)'>
+    /feedback/:user_feedback_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:89</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/feedback/:user_feedback_id/comments/:id(.:format)'>
+    /feedback/:user_feedback_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:89</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/feedback/:user_feedback_id/comments/:id(.:format)'>
+    /feedback/:user_feedback_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:89</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_feedbacks'>
+      user_feedbacks<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback(.:format)'>
+    /feedback(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/feedback(.:format)'>
+    /feedback(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user_feedback'>
+      new_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback/new(.:format)'>
+    /feedback/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_user_feedback'>
+      edit_user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback/:id/edit(.:format)'>
+    /feedback/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_feedback'>
+      user_feedback<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/feedback/:id(.:format)'>
+    /feedback/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/feedback/:id(.:format)'>
+    /feedback/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/feedback/:id(.:format)'>
+    /feedback/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/feedback/:id(.:format)'>
+    /feedback/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_feedbacks#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:77</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='dashboard_user_requests'>
+      dashboard_user_requests<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/requests/dashboard(.:format)'>
+    /requests/dashboard(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#dashboard</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:99</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='add_tag_user_request'>
+      add_tag_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/requests/:id/add_tag(.:format)'>
+    /requests/:id/add_tag(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#add_tag</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:102</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_tag_user_request'>
+      remove_tag_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/requests/:id/remove_tag(.:format)'>
+    /requests/:id/remove_tag(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#remove_tag</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:103</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='respond_to_request_user_request'>
+      respond_to_request_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/requests/:id/respond_to_request(.:format)'>
+    /requests/:id/respond_to_request(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#respond_to_request</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:104</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_attachment_user_request'>
+      remove_attachment_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/requests/:id/remove_attachment(.:format)'>
+    /requests/:id/remove_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#remove_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:105</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='share_attachment_user_request'>
+      share_attachment_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/requests/:id/share_attachment(.:format)'>
+    /requests/:id/share_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#share_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:106</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='remove_attachment_user_request_comment'>
+      remove_attachment_user_request_comment<span class='helper'>_path</span>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/requests/:user_request_id/comments/:id/remove_attachment(.:format)'>
+    /requests/:user_request_id/comments/:id/remove_attachment(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#remove_attachment</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:110</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_request_comments'>
+      user_request_comments<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/requests/:user_request_id/comments(.:format)'>
+    /requests/:user_request_id/comments(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:108</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_request_comment'>
+      user_request_comment<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/requests/:user_request_id/comments/:id(.:format)'>
+    /requests/:user_request_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:108</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/requests/:user_request_id/comments/:id(.:format)'>
+    /requests/:user_request_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:108</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/requests/:user_request_id/comments/:id(.:format)'>
+    /requests/:user_request_id/comments/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/feedback_comments#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:108</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_requests'>
+      user_requests<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/requests(.:format)'>
+    /requests(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/requests(.:format)'>
+    /requests(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_user_request'>
+      new_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/requests/new(.:format)'>
+    /requests/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_user_request'>
+      edit_user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/requests/:id/edit(.:format)'>
+    /requests/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='user_request'>
+      user_request<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/requests/:id(.:format)'>
+    /requests/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/requests/:id(.:format)'>
+    /requests/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/requests/:id(.:format)'>
+    /requests/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/requests/:id(.:format)'>
+    /requests/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/user_requests#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:97</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='tags'>
+      tags<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tags(.:format)'>
+    /tags(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/tags(.:format)'>
+    /tags(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='new_tag'>
+      new_tag<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tags/new(.:format)'>
+    /tags/new(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#new</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='edit_tag'>
+      edit_tag<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/tags/:id/edit(.:format)'>
+    /tags/:id/edit(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#edit</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='tag'>
+      tag<span class='helper'>_path</span>
+  </td>
+  <td>
+    PATCH
+  </td>
+  <td data-route-path='/tags/:id(.:format)'>
+    /tags/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    PUT
+  </td>
+  <td data-route-path='/tags/:id(.:format)'>
+    /tags/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#update</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    DELETE
+  </td>
+  <td data-route-path='/tags/:id(.:format)'>
+    /tags/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/tags#destroy</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:116</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='messages_conversation'>
+      messages_conversation<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/conversations/:id/messages(.:format)'>
+    /conversations/:id/messages(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/conversations#messages</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:121</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='conversation_messages'>
+      conversation_messages<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/conversations/:conversation_id/messages(.:format)'>
+    /conversations/:conversation_id/messages(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/direct_messages#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:123</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='conversations'>
+      conversations<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/conversations(.:format)'>
+    /conversations(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/conversations#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:119</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name=''>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/conversations(.:format)'>
+    /conversations(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/conversations#create</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:119</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='conversation'>
+      conversation<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/conversations/:id(.:format)'>
+    /conversations/:id(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/conversations#show</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:119</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='users_search'>
+      users_search<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/users/search(.:format)'>
+    /users/search(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/users#search</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:127</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='unread_count_notifications'>
+      unread_count_notifications<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/notifications/unread_count(.:format)'>
+    /notifications/unread_count(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/notifications#unread_count</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:132</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='mark_read_notifications'>
+      mark_read_notifications<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/notifications/mark_read(.:format)'>
+    /notifications/mark_read(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/notifications#mark_read</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:133</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='read_notification'>
+      read_notification<span class='helper'>_path</span>
+  </td>
+  <td>
+    POST
+  </td>
+  <td data-route-path='/notifications/:id/read(.:format)'>
+    /notifications/:id/read(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/notifications#read</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:136</p>
+  </td>
+</tr>
+<tr class='route_row' data-helper='path'>
+  <td data-route-name='notifications'>
+      notifications<span class='helper'>_path</span>
+  </td>
+  <td>
+    GET
+  </td>
+  <td data-route-path='/notifications(.:format)'>
+    /notifications(.:format)
+  </td>
+  <td>
+    <p>llama_bot_rails/notifications#index</p>
+  </td>
+  <td>
+    <p>/rails/vendor/llama_bot_rails/config/routes.rb:130</p>
+  </td>
+</tr>
+
+  </tbody>
+</table>
+
+<script>
+  // support forEach iterator on NodeList
+  NodeList.prototype.forEach = Array.prototype.forEach;
+
+  // Enables query search functionality
+  function setupMatchingRoutes() {
+    // Check if there are any matched results in a section
+    function checkNoMatch(section, trElement) {
+      if (section.children.length <= 1) {
+        section.appendChild(trElement);
+      }
+    }
+
+    // get JSON from URL and invoke callback with result
+    function getJSON(url, success) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url);
+      xhr.onload = function() {
+        if (this.status == 200)
+          success(JSON.parse(this.response));
+      };
+      xhr.send();
+    }
+
+    function delayedKeyup(input, callback) {
+      var timeout;
+      input.onkeyup = function(){
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(callback, 300);
+      }
+    }
+
+    // remove params or fragments
+    function sanitizeQuery(query) {
+      return query.replace(/[#?].*/, '');
+    }
+
+    var pathElements = document.querySelectorAll('#route_table [data-route-path]'),
+        searchElem   = document.querySelector('#search'),
+        exactSection = document.querySelector('#exact_matches'),
+        fuzzySection = document.querySelector('#fuzzy_matches');
+
+    // Remove matches when no search value is present
+    searchElem.onblur = function(e) {
+      if (searchElem.value === "") {
+        exactSection.innerHTML = "";
+        fuzzySection.innerHTML = "";
+      }
+    }
+
+    function buildTr(string) {
+      var tr = document.createElement('tr');
+      var th = document.createElement('th');
+      th.setAttribute('colspan', 5);
+      tr.appendChild(th);
+      th.innerText = string;
+      return tr;
+    }
+
+    // On key press perform a search for matching paths
+    delayedKeyup(searchElem, function() {
+      var query = sanitizeQuery(searchElem.value),
+          defaultExactMatch = buildTr("Routes matching '" + query + "':"),
+          defaultFuzzyMatch = buildTr("Routes containing '" + query + "':"),
+          noExactMatch      = buildTr('No exact matches found'),
+          noFuzzyMatch      = buildTr('No fuzzy matches found');
+
+      if (!query)
+        return searchElem.onblur();
+
+      getJSON('/rails/info/routes?query=' + query, function(matches){
+        // Clear out results section
+        exactSection.replaceChildren(defaultExactMatch);
+        fuzzySection.replaceChildren(defaultFuzzyMatch);
+
+        // Display exact matches and fuzzy matches
+        pathElements.forEach(function(elem) {
+          var elemPath = elem.getAttribute('data-route-path');
+          if (matches['exact'].indexOf(elemPath) != -1)
+            exactSection.appendChild(elem.parentNode.cloneNode(true));
+
+          if (matches['fuzzy'].indexOf(elemPath) != -1)
+            fuzzySection.appendChild(elem.parentNode.cloneNode(true));
+        })
+
+        // Display 'No Matches' message when no matches are found
+        checkNoMatch(exactSection, noExactMatch);
+        checkNoMatch(fuzzySection, noFuzzyMatch);
+      })
+    })
+  }
+
+  // Enables functionality to toggle between `_path` and `_url` helper suffixes
+  function setupRouteToggleHelperLinks() {
+
+    // Sets content for each element
+    function setValOn(elems, val) {
+      elems.forEach(function(elem) {
+        elem.innerHTML = val;
+      });
+    }
+
+    // Sets onClick event for each element
+    function onClick(elems, func) {
+      elems.forEach(function(elem) {
+        elem.onclick = func;
+      });
+    }
+
+    var toggleLinks = document.querySelectorAll('#route_table [data-route-helper]');
+
+    onClick(toggleLinks, function(){
+      var helperTxt   = this.getAttribute("data-route-helper"),
+          helperElems = document.querySelectorAll('[data-route-name] span.helper');
+
+      setValOn(helperElems, helperTxt);
+    });
+  }
+
+  setupMatchingRoutes();
+  setupRouteToggleHelperLinks();
+
+  // Focus the search input after page has loaded
+  document.getElementById('search').focus();
+</script>
+
+
+  <h2 class="request-heading">Request</h2>
+  <p><b>Parameters</b>:</p> <pre>None</pre>
+
+<div class="details">
+  <div class="summary"><a href="#" onclick="return toggleSessionDump()">Toggle session dump</a></div>
+  <div id="session_dump" class="hidden"><pre></pre></div>
+</div>
+
+<div class="details">
+  <div class="summary"><a href="#" onclick="return toggleEnvDump()">Toggle env dump</a></div>
+  <div id="env_dump" class="hidden"><pre>GATEWAY_INTERFACE: &quot;CGI/1.2&quot;
+HTTP_ACCEPT: &quot;*/*&quot;
+HTTP_ACCEPT_ENCODING: &quot;gzip&quot;
+HTTP_VERSION: &quot;HTTP/1.1&quot;
+HTTP_X_FORWARDED_FOR: &quot;10.22.129.1&quot;
+HTTP_X_FORWARDED_HOST: &quot;www.lawedgesolutions.com&quot;
+ORIGINAL_SCRIPT_NAME: &quot;&quot;
+REMOTE_ADDR: &quot;172.19.0.1&quot;
+SERVER_NAME: &quot;www.lawedgesolutions.com&quot;
+SERVER_PROTOCOL: &quot;HTTP/1.1&quot;</pre></div>
+</div>
+
+<h2 class="response-heading">Response</h2>
+<p><b>Headers</b>:</p> <pre>None</pre>
+
+</main>
+
+
+</body>
+</html>

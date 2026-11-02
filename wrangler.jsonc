@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lawedge-solutions",
+  "compatibility_date": "2026-11-02",
+  "assets": {
+    "directory": "./static_site",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
